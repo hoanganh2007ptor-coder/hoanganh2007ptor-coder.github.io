@@ -2,141 +2,147 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nạp Thẻ VIP</title>
+<title>Tăng Follow VIP</title>
 
 <style>
-body {
+body{
     margin:0;
-    font-family: Arial;
-    background: linear-gradient(135deg,#0f0f0f,#1c1c1c);
+    font-family:Arial;
+    background:linear-gradient(135deg,#0f0f0f,#1c1c1c);
     color:white;
 }
 
-.header {
-    background: linear-gradient(90deg,#ff5722,#ff9800);
+.header{
+    background:linear-gradient(90deg,#ff5722,#ff9800);
     padding:15px;
     text-align:center;
+    font-size:20px;
     font-weight:bold;
 }
 
-.container {
+.container{
     max-width:420px;
     margin:20px auto;
+}
+
+.box{
     background:#1e1e1e;
     padding:20px;
+    margin:15px 0;
     border-radius:15px;
+    box-shadow:0 0 10px rgba(255,140,0,0.2);
 }
 
-.card {
-    background:#2a2a2a;
-    padding:15px;
-    margin:10px 0;
-    border-radius:10px;
-    text-align:center;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.card:hover {
-    transform:scale(1.05);
-    box-shadow:0 0 15px orange;
-}
-
-.active {
-    border:2px solid orange;
-}
-
-input, select {
+input{
     width:100%;
     padding:12px;
-    margin:10px 0;
     border:none;
     border-radius:8px;
-}
-
-button {
-    width:100%;
-    padding:14px;
-    background:linear-gradient(90deg,#ff5722,#ff9800);
-    border:none;
-    color:white;
-    border-radius:10px;
-    font-size:16px;
-}
-
-.success {
-    text-align:center;
-    color:#4caf50;
     margin-top:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#ff5722,#ff9800);
+    color:white;
+    font-size:15px;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.task{
+    background:#2a2a2a;
+    padding:10px;
+    border-radius:10px;
+    margin:8px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-🔥 NẠP THẺ VIP FULL
-</div>
+<div class="header">🔥 HỆ THỐNG TĂNG FOLLOW VIP</div>
 
 <div class="container">
 
-<h3>🎮 Nhập UID</h3>
-<input type="text" id="uid" placeholder="Nhập UID Free Fire">
+<div class="box">
+<h3>👤 Đăng nhập UID</h3>
+<input id="uid" placeholder="Nhập UID của bạn">
+<button onclick="login()">Đăng nhập</button>
+<p id="user"></p>
+</div>
 
-<h3>🛒 Chọn dịch vụ</h3>
+<div class="box">
+<h3>💰 Coin: <span id="coin">0</span></h3>
+<button onclick="lamnhiemvu()">+10 Coin (Làm nhiệm vụ)</button>
+</div>
 
-<div class="card" onclick="chon(this,'💎 100 KC',20000)">💎 100 KC - 20.000đ</div>
-<div class="card" onclick="chon(this,'💎 310 KC',50000)">💎 310 KC - 50.000đ</div>
-<div class="card" onclick="chon(this,'📅 Thẻ tuần',20000)">📅 Thẻ tuần - 20.000đ</div>
-<div class="card" onclick="chon(this,'📆 Thẻ tháng',100000)">📆 Thẻ tháng - 100.000đ</div>
-<div class="card" onclick="chon(this,'🚀 Thẻ nâng cấp',150000)">🚀 Thẻ nâng cấp - 150.000đ</div>
+<div class="box">
+<h3>📊 Nhiệm vụ</h3>
 
-<h3>💳 Nạp thẻ</h3>
+<div class="task">
+<span>Follow UID: 123456</span>
+<button onclick="nhan()">+10</button>
+</div>
 
-<select id="telco">
-<option>Viettel</option>
-<option>Mobifone</option>
-<option>Vinaphone</option>
-</select>
+<div class="task">
+<span>Follow UID: 789012</span>
+<button onclick="nhan()">+10</button>
+</div>
 
-<input type="text" id="code" placeholder="Nhập mã thẻ">
-<input type="text" id="serial" placeholder="Nhập seri">
+</div>
 
-<button onclick="napthe()">Nạp ngay</button>
-
-<div class="success" id="msg"></div>
+<div class="box">
+<h3>🚀 Tăng Follow</h3>
+<button onclick="tang()">50 Coin = +100 Follow</button>
+<p id="kq"></p>
+</div>
 
 </div>
 
 <script>
-let menhgia = 0;
-let loai = "";
+let coin = 0;
 
-function chon(el, name, gia){
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    menhgia = gia;
-    loai = name;
+function login(){
+    let uid = document.getElementById("uid").value;
+    if(uid=="") return alert("Nhập UID!");
+    document.getElementById("user").innerText = "✅ UID: "+uid;
 }
 
-function napthe(){
-    let uid = document.getElementById("uid").value;
+function lamnhiemvu(){
+    coin += 10;
+    updateCoin();
+}
 
-    if(uid === ""){
-        alert("Nhập UID!");
+function nhan(){
+    coin += 10;
+    updateCoin();
+    alert("Đã nhận nhiệm vụ!");
+}
+
+function tang(){
+    if(coin < 50){
+        alert("Không đủ coin!");
         return;
     }
+    coin -= 50;
+    updateCoin();
+    document.getElementById("kq").innerText = "🎉 Đã tăng follow (demo)";
+}
 
-    if(menhgia === 0){
-        alert("Chọn dịch vụ!");
-        return;
-    }
-
-    document.getElementById("msg").innerText =
-        "✅ " + loai + " | UID: " + uid + " | Thành công (demo)";
+function updateCoin(){
+    document.getElementById("coin").innerText = coin;
 }
 </script>
 
 </body>
-</html>
+</html>html>
