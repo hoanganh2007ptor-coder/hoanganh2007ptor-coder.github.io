@@ -2,9 +2,54 @@
 <html>
 <head>
   <title>ShopHanhdz</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial;
+      background: #f5f5f5;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 
 <body>
+
+<div class="box">
 
 <h2>Đăng ký</h2>
 <input id="email_register" placeholder="Email">
@@ -15,6 +60,8 @@
 <input id="email_login" placeholder="Email">
 <input id="password_login" type="password" placeholder="Password">
 <button onclick="login()">Đăng nhập</button>
+
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
@@ -38,4 +85,31 @@
     const email = document.getElementById("email_register").value;
     const password = document.getElementById("password_register").value;
 
-    if (!email ||
+    if (!email || !password) {
+      alert("Nhập đầy đủ thông tin!");
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => alert("Đăng ký thành công"))
+      .catch(err => alert(err.message));
+  };
+
+  // Đăng nhập
+  window.login = function () {
+    const email = document.getElementById("email_login").value;
+    const password = document.getElementById("password_login").value;
+
+    if (!email || !password) {
+      alert("Nhập đầy đủ thông tin!");
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => alert("Đăng nhập thành công"))
+      .catch(err => alert(err.message));
+  };
+</script>
+
+</body>
+</html>
