@@ -1,148 +1,96 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Tăng Follow VIP</title>
-
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:linear-gradient(135deg,#0f0f0f,#1c1c1c);
-    color:white;
-}
-
-.header{
-    background:linear-gradient(90deg,#ff5722,#ff9800);
-    padding:15px;
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.container{
-    max-width:420px;
-    margin:20px auto;
-}
-
-.box{
-    background:#1e1e1e;
-    padding:20px;
-    margin:15px 0;
-    border-radius:15px;
-    box-shadow:0 0 10px rgba(255,140,0,0.2);
-}
-
-input{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    margin-top:10px;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:none;
-    border-radius:10px;
-    background:linear-gradient(90deg,#ff5722,#ff9800);
-    color:white;
-    font-size:15px;
-}
-
-button:hover{
-    opacity:0.9;
-}
-
-.task{
-    background:#2a2a2a;
-    padding:10px;
-    border-radius:10px;
-    margin:8px 0;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">🔥 HỆ THỐNG TĂNG FOLLOW VIP</div>
-
-<div class="container">
-
-<div class="box">
-<h3>👤 Đăng nhập UID</h3>
-<input id="uid" placeholder="Nhập UID của bạn">
-<button onclick="login()">Đăng nhập</button>
-<p id="user"></p>
-</div>
-
-<div class="box">
-<h3>💰 Coin: <span id="coin">0</span></h3>
-<button onclick="lamnhiemvu()">+10 Coin (Làm nhiệm vụ)</button>
-</div>
-
-<div class="box">
-<h3>📊 Nhiệm vụ</h3>
-
-<div class="task">
-<span>Follow UID: 123456</span>
-<button onclick="nhan()">+10</button>
-</div>
-
-<div class="task">
-<span>Follow UID: 789012</span>
-<button onclick="nhan()">+10</button>
-</div>
-
-</div>
-
-<div class="box">
-<h3>🚀 Tăng Follow</h3>
-<button onclick="tang()">50 Coin = +100 Follow</button>
-<p id="kq"></p>
-</div>
-
-</div>
-
 <script>
-let coin = 0;
+let db = JSON.parse(localStorage.getItem("db")||"{}");
+let current = localStorage.getItem("current")||"";
 
-function login(){
-    let uid = document.getElementById("uid").value;
-    if(uid=="") return alert("Nhập UID!");
-    document.getElementById("user").innerText = "✅ UID: "+uid;
+function save(){
+    localStorage.setItem("db", JSON.stringify(db));
 }
 
-function lamnhiemvu(){
-    coin += 10;
-    updateCoin();
-}
-
-function nhan(){
-    coin += 10;
-    updateCoin();
-    alert("Đã nhận nhiệm vụ!");
-}
-
-function tang(){
-    if(coin < 50){
-        alert("Không đủ coin!");
-        return;
+function update(){
+    if(current && db[current]){
+        document.getElementById("coin").innerText = db[current].coin;
+        document.getElementById("info").innerText =
+            "👤 "+current+" | UID: "+(db[current].uid||"");
     }
-    coin -= 50;
-    updateCoin();
-    document.getElementById("kq").innerText = "🎉 Đã tăng follow (demo)";
 }
 
-function updateCoin(){
-    document.getElementById("coin").innerText = coin;
+// đăng ký
+function register(){
+    let u = user.value;
+    let p = pass.value;
+    let id = uid.value;
+
+    if(!u||!p||!id) return alert("Nhập đủ!");
+
+    if(db[u]) return alert("Tồn tại!");
+
+    db[u] = {pass:p, coin:0, uid:id, last:0};
+    save();
+    alert("Đăng ký OK");
 }
+
+// đăng nhập
+function login(){
+    let u = user.value;
+    let p = pass.value;
+
+    if(!db[u] || db[u].pass!=p){
+        return alert("Sai!");
+    }
+
+    current = u;
+    localStorage.setItem("current", u);
+    update();
+}
+
+// nhiệm vụ
+function task(){
+    if(!current) return alert("Login!");
+
+    let now = Date.now();
+    if(now - db[current].last < 2000){
+        return alert("Chậm lại!");
+    }
+
+    db[current].coin += 10;
+    db[current].last = now;
+
+    save();
+    update();
+}
+
+// mua follow
+function buy(){
+    if(!current) return alert("Login!");
+
+    if(db[current].coin < 50){
+        return alert("Không đủ coin");
+    }
+
+    db[current].coin -= 50;
+
+    save();
+    update();
+
+    kq.innerText = "🎉 Đã buff follow (demo)";
+}
+
+// nạp tiền
+function nap(){
+    if(!current) return alert("Login!");
+
+    let money = parseInt(sotien.value);
+
+    if(!money) return alert("Nhập tiền");
+
+    db[current].coin += money * 100;
+
+    save();
+    update();
+
+    alert("Nạp thành công (demo)");
+}
+
+update();
 </script>
 
-</body>
-</html>html>
