@@ -1,96 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hệ Thống Buff Follow VIP</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#0f0f0f,#1c1c1c);
+    color:white;
+}
+
+.header{
+    background:linear-gradient(90deg,#ff5722,#ff9800);
+    padding:15px;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:420px;
+    margin:20px auto;
+}
+
+.box{
+    background:#1e1e1e;
+    padding:20px;
+    margin:15px 0;
+    border-radius:15px;
+    box-shadow:0 0 10px rgba(255,140,0,0.2);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#ff5722,#ff9800);
+    color:white;
+    font-size:15px;
+}
+
+.task{
+    background:#2a2a2a;
+    padding:10px;
+    border-radius:10px;
+    margin:8px 0;
+    display:flex;
+    justify-content:space-between;
+}
+
+.admin{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🔥 HỆ THỐNG BUFF FOLLOW VIP 🔥</div>
+
+<div class="container">
+
+<!-- LOGIN / REGISTER -->
+<div class="box">
+<h3>🔐 Tài khoản</h3>
+<input id="user" placeholder="Tên đăng nhập">
+<input id="pass" placeholder="Mật khẩu">
+
+<button onclick="register()">Đăng ký</button>
+<button onclick="login()">Đăng nhập</button>
+
+<p id="info"></p>
+</div>
+
+<!-- USER INFO -->
+<div class="box">
+<h3>👤 UID</h3>
+<input id="uid" placeholder="Nhập UID cần buff">
+</div>
+
+<!-- COIN -->
+<div class="box">
+<h3>💰 Coin: <span id="coin">0</span></h3>
+</div>
+
+<!-- BUFF -->
+<div class="box">
+<h3>🚀 Buff Follow</h3>
+<button onclick="buff()">50 coin = +100 follow</button>
+<p id="kq"></p>
+</div>
+
+<!-- NẠP TIỀN -->
+<div class="box">
+<h3>💳 Nạp tiền ngân hàng</h3>
+
+<p>Ngân hàng: MB Bank</p>
+<p>STK: 567551234</p>
+<p>Tên: NGUYEN HOANG ANH</p>
+
+<p>📌 Nội dung: nap USERNAME</p>
+
+<input id="money" placeholder="Số tiền đã chuyển">
+<button onclick="nap()">Tôi đã chuyển</button>
+</div>
+
+<!-- ADMIN -->
+<div class="box admin" id="adminBox">
+<h3>🧑‍💻 ADMIN</h3>
+
+<button onclick="loadUsers()">Xem user</button>
+<div id="users"></div>
+
+</div>
+
+</div>
+
 <script>
-let db = JSON.parse(localStorage.getItem("db")||"{}");
-let current = localStorage.getItem("current")||"";
+let currentUser = "";
 
-function save(){
-    localStorage.setItem("db", JSON.stringify(db));
+// REGISTER
+async function register(){
+  let res = await fetch("http://localhost:3000/register",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      user:user.value,
+      pass:pass.value
+    })
+  });
+
+  alert(await res.text());
 }
 
-function update(){
-    if(current && db[current]){
-        document.getElementById("coin").innerText = db[current].coin;
-        document.getElementById("info").innerText =
-            "👤 "+current+" | UID: "+(db[current].uid||"");
-    }
+// LOGIN
+async function login(){
+  let res = await fetch("http://localhost:3000/login",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      user:user.value,
+      pass:pass.value
+    })
+  });
+
+  let data = await res.json();
+
+  if(!data.user){
+    alert("Sai tài khoản!");
+    return;
+  }
+
+  currentUser = data.user;
+  info.innerText = "✅ " + data.user;
+
+  if(data.user === "admin"){
+    document.getElementById("adminBox").style.display="block";
+  }
+
+  loadUser();
 }
 
-// đăng ký
-function register(){
-    let u = user.value;
-    let p = pass.value;
-    let id = uid.value;
+// LOAD USER
+async function loadUser(){
+  let res = await fetch("http://localhost:3000/user/"+currentUser);
+  let data = await res.json();
 
-    if(!u||!p||!id) return alert("Nhập đủ!");
-
-    if(db[u]) return alert("Tồn tại!");
-
-    db[u] = {pass:p, coin:0, uid:id, last:0};
-    save();
-    alert("Đăng ký OK");
+  coin.innerText = data.coin;
 }
 
-// đăng nhập
-function login(){
-    let u = user.value;
-    let p = pass.value;
+// BUFF
+async function buff(){
+  let res = await fetch("http://localhost:3000/buff",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      user: currentUser,
+      uid: uid.value
+    })
+  });
 
-    if(!db[u] || db[u].pass!=p){
-        return alert("Sai!");
-    }
+  let data = await res.text();
 
-    current = u;
-    localStorage.setItem("current", u);
-    update();
+  kq.innerText = data;
+  loadUser();
 }
 
-// nhiệm vụ
-function task(){
-    if(!current) return alert("Login!");
+// NẠP
+async function nap(){
+  await fetch("http://localhost:3000/nap",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      user: currentUser,
+      money: money.value
+    })
+  });
 
-    let now = Date.now();
-    if(now - db[current].last < 2000){
-        return alert("Chậm lại!");
-    }
-
-    db[current].coin += 10;
-    db[current].last = now;
-
-    save();
-    update();
+  alert("Đã gửi yêu cầu!");
+  loadUser();
 }
 
-// mua follow
-function buy(){
-    if(!current) return alert("Login!");
+// ADMIN
+async function loadUsers(){
+  let res = await fetch("http://localhost:3000/admin");
+  let data = await res.json();
 
-    if(db[current].coin < 50){
-        return alert("Không đủ coin");
-    }
+  let html="";
+  data.forEach(u=>{
+    html += `<p>${u.user} - ${u.coin} coin</p>`;
+  });
 
-    db[current].coin -= 50;
-
-    save();
-    update();
-
-    kq.innerText = "🎉 Đã buff follow (demo)";
+  users.innerHTML = html;
 }
-
-// nạp tiền
-function nap(){
-    if(!current) return alert("Login!");
-
-    let money = parseInt(sotien.value);
-
-    if(!money) return alert("Nhập tiền");
-
-    db[current].coin += money * 100;
-
-    save();
-    update();
-
-    alert("Nạp thành công (demo)");
-}
-
-update();
 </script>
+
+</body>
+</html>
 
