@@ -3,51 +3,39 @@
 <head>
   <title>ShopHanhdz</title>
 </head>
+
 <body>
 
 <h2>Đăng ký</h2>
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Mật khẩu"><br><br>
+<input id="email_register" placeholder="Email">
+<input id="password_register" type="password" placeholder="Password">
 <button onclick="register()">Đăng ký</button>
 
 <h2>Đăng nhập</h2>
+<input id="email_login" placeholder="Email">
+<input id="password_login" type="password" placeholder="Password">
 <button onclick="login()">Đăng nhập</button>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCLUpCnsmeMYyqbUItzjNPkUv114f-JTuI",
-  authDomain: "shophanhdz.firebaseapp.com",
-  projectId: "shophanhdz",
-  storageBucket: "shophanhdz.appspot.com",
-  messagingSenderId: "96467000870",
-  appId: "1:96467000870:web:639fb151934f2ebcc1d0e7"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLUpCnsmeMYyqbUItzjNPkUv114f-JTuI",
+    authDomain: "shophanhdz.firebaseapp.com",
+    projectId: "shophanhdz",
+    storageBucket: "shophanhdz.firebasestorage.app",
+    messagingSenderId: "96467000870",
+    appId: "1:96467000870:web:639fb151934f2ebcc1d0e7"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-window.register = function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  // Đăng ký
+  window.register = function () {
+    const email = document.getElementById("email_register").value;
+    const password = document.getElementById("password_register").value;
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => alert("Đăng ký thành công"))
-    .catch(err => alert(err.message));
-}
-
-window.login = function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => alert("Đăng nhập thành công"))
-    .catch(err => alert(err.message));
-}
-</script>
-
-</body>
-</html>
+    if (!email ||
