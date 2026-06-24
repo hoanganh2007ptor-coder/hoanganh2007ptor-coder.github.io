@@ -2,65 +2,90 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Nạp Thẻ Nhanh</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nạp Thẻ Tự Động</title>
 
 <style>
 body {
     margin:0;
     font-family: Arial;
-    background:#111;
+    background: linear-gradient(135deg,#0f0f0f,#1c1c1c);
     color:white;
 }
 
 /* HEADER */
 .header {
-    background:#ff5722;
+    background: linear-gradient(90deg,#ff5722,#ff9800);
     padding:15px;
     text-align:center;
     font-size:20px;
     font-weight:bold;
+    box-shadow:0 0 15px rgba(255,87,34,0.7);
 }
 
-/* BOX */
+/* CONTAINER */
 .container {
-    max-width:400px;
-    margin:30px auto;
+    max-width:420px;
+    margin:20px auto;
     background:#1e1e1e;
     padding:20px;
-    border-radius:10px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
 
-h2 {
+/* CARD */
+.card {
+    background:#2a2a2a;
+    padding:15px;
+    margin:10px 0;
+    border-radius:10px;
     text-align:center;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 15px orange;
+}
+
+.active {
+    border:2px solid orange;
 }
 
 /* INPUT */
 select, input {
     width:100%;
-    padding:10px;
+    padding:12px;
     margin:10px 0;
     border:none;
-    border-radius:5px;
+    border-radius:8px;
+    font-size:15px;
 }
 
 /* BUTTON */
 button {
     width:100%;
-    padding:12px;
-    background:#ff5722;
+    padding:14px;
+    background:linear-gradient(90deg,#ff5722,#ff9800);
     border:none;
     color:white;
     font-size:16px;
-    border-radius:8px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
 }
 
-/* CARD GÓI */
-.card {
-    background:#222;
-    padding:10px;
-    margin:10px 0;
-    border-radius:8px;
+button:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 20px orange;
+}
+
+/* SUCCESS */
+.success {
     text-align:center;
+    color:#4caf50;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -68,18 +93,18 @@ button {
 <body>
 
 <div class="header">
-🔥 NẠP THẺ TỰ ĐỘNG
+🔥 NẠP THẺ TỰ ĐỘNG - VIP
 </div>
 
 <div class="container">
 
-<h2>Chọn mệnh giá</h2>
+<h3>💎 Chọn gói kim cương</h3>
 
-<div class="card">100 Kim Cương - 20.000đ</div>
-<div class="card">310 Kim Cương - 50.000đ</div>
-<div class="card">520 Kim Cương - 100.000đ</div>
+<div class="card" onclick="chon(this,20000)">100 KC - 20.000đ</div>
+<div class="card" onclick="chon(this,50000)">310 KC - 50.000đ</div>
+<div class="card" onclick="chon(this,100000)">520 KC - 100.000đ</div>
 
-<h2>Nạp thẻ</h2>
+<h3>💳 Nạp thẻ</h3>
 
 <select>
 <option>Viettel</option>
@@ -92,11 +117,25 @@ button {
 
 <button onclick="napthe()">Nạp ngay</button>
 
+<div class="success" id="msg"></div>
+
 </div>
 
 <script>
+let menhgia = 0;
+
+function chon(el, gia){
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    menhgia = gia;
+}
+
 function napthe(){
-    alert("Nạp thẻ thành công (demo)");
+    if(menhgia == 0){
+        alert("Chọn gói trước!");
+        return;
+    }
+    document.getElementById("msg").innerText = "✅ Nạp thành công (demo)";
 }
 </script>
 
