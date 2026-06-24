@@ -2,126 +2,223 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Web Tăng Follow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 App Kiếm Tiền</title>
 
 <style>
 body{
-  background:#0f172a;
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#000,#0f172a);
   color:white;
-  font-family:sans-serif;
   text-align:center;
 }
-.box{
+
+.top{
+  background:#020617;
+  padding:15px;
+  font-size:18px;
+}
+
+.card{
   background:#1e293b;
-  margin:20px;
+  margin:15px;
   padding:20px;
-  border-radius:10px;
+  border-radius:15px;
 }
+
 input{
-  padding:10px;
+  padding:12px;
   margin:5px;
-  border-radius:5px;
   border:none;
+  border-radius:10px;
+  width:80%;
 }
+
 button{
-  padding:10px 20px;
-  background:#22c55e;
+  padding:12px 25px;
   border:none;
-  border-radius:8px;
+  border-radius:25px;
+  background:#22c55e;
   color:white;
-  cursor:pointer;
+  margin-top:10px;
 }
+
 .hidden{
   display:none;
+}
+
+.coin{
+  color:#22c55e;
+  font-weight:bold;
+}
+
+.user{
+  background:#0f172a;
+  margin:5px;
+  padding:10px;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🔥 Web Tăng Follow</h1>
+<div class="top">🔥 APP KIẾM TIỀN</div>
 
 <!-- LOGIN -->
-<div id="loginBox" class="box">
+<div id="loginBox" class="card">
   <h3>Đăng nhập</h3>
-  <input id="user" placeholder="Tên tài khoản"><br>
-  <input id="pass" type="password" placeholder="Mật khẩu"><br>
+  <input id="loginUser" placeholder="Tài khoản"><br>
+  <input id="loginPass" type="password" placeholder="Mật khẩu"><br>
   <button onclick="login()">Đăng nhập</button>
+
+  <p>Chưa có tài khoản?</p>
+  <button onclick="showRegister()">Đăng ký</button>
+</div>
+
+<!-- REGISTER -->
+<div id="registerBox" class="card hidden">
+  <h3>Đăng ký</h3>
+  <input id="regUser" placeholder="Tài khoản"><br>
+  <input id="regPass" type="password" placeholder="Mật khẩu"><br>
+  <button onclick="register()">Tạo tài khoản</button>
+
+  <p>Đã có tài khoản?</p>
+  <button onclick="showLogin()">Quay lại</button>
 </div>
 
 <!-- APP -->
 <div id="app" class="hidden">
 
-  <div class="box">
-    <h3>Xin chào: <span id="name"></span></h3>
-    <p>💰 Điểm: <span id="coin">0</span></p>
+  <div class="card">
+    <h3>Xin chào <span id="name"></span></h3>
+    <p>💰 Điểm: <span id="coin" class="coin">0</span></p>
   </div>
 
-  <div class="box">
-    <h3>Follow người này</h3>
-    <p id="target">@user_demo</p>
-    <button onclick="follow()">Đã follow</button>
+  <div class="card">
+    <h3>📲 Nhiệm vụ</h3>
+    <p>Follow: <b>@user_demo</b></p>
+    <button onclick="follow()">+10 điểm</button>
   </div>
 
-  <div class="box">
+  <div class="card">
+    <h3>💳 Nạp tiền</h3>
+    <input id="nap" placeholder="Nhập số tiền (vd: 10000)">
+    <button onclick="napTien()">Nạp</button>
+  </div>
+
+  <div class="card">
     <h3>👥 Danh sách user</h3>
-    <ul id="users"></ul>
+    <div id="users"></div>
+  </div>
+
+  <div class="card">
+    <button onclick="logout()">Đăng xuất</button>
   </div>
 
 </div>
 
 <script>
 
-// fake database
-let accounts = [
-  {user:"admin", pass:"123", coin:100},
-  {user:"test", pass:"123", coin:50}
-];
-
+let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
 let current = null;
 
-// login
+// chuyển giao diện
+function showRegister(){
+  loginBox.classList.add("hidden");
+  registerBox.classList.remove("hidden");
+}
+
+function showLogin(){
+  registerBox.classList.add("hidden");
+  loginBox.classList.remove("hidden");
+}
+
+// đăng ký
+function register(){
+  let u = regUser.value;
+  let p = regPass.value;
+
+  if(!u || !p) return alert("Nhập đầy đủ!");
+
+  if(accounts.find(a => a.user === u)){
+    return alert("Tài khoản đã tồn tại!");
+  }
+
+  accounts.push({user:u, pass:p, coin:0});
+  save();
+
+  alert("Đăng ký thành công!");
+  showLogin();
+}
+
+// đăng nhập
 function login(){
-  let u = document.getElementById("user").value;
-  let p = document.getElementById("pass").value;
+  let u = loginUser.value;
+  let p = loginPass.value;
 
   let acc = accounts.find(a => a.user === u && a.pass === p);
 
-  if(acc){
-    current = acc;
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
+  if(!acc) return alert("Sai tài khoản!");
 
-    document.getElementById("name").innerText = current.user;
-    updateCoin();
-    loadUsers();
-  }else{
-    alert("Sai tài khoản!");
-  }
+  current = acc;
+
+  loginBox.classList.add("hidden");
+  app.classList.remove("hidden");
+
+  name.innerText = current.user;
+  updateCoin();
+  loadUsers();
 }
 
-// cập nhật điểm
-function updateCoin(){
-  document.getElementById("coin").innerText = current.coin;
-}
-
-// follow
+// nhiệm vụ
 function follow(){
   current.coin += 10;
+  save();
   updateCoin();
-  alert("+10 điểm");
+  loadUsers();
 }
 
-// load user
-function loadUsers(){
-  let list = document.getElementById("users");
-  list.innerHTML = "";
+// nạp tiền (fake)
+function napTien(){
+  let money = parseInt(nap.value);
 
-  accounts.forEach(acc=>{
-    let li = document.createElement("li");
-    li.innerText = acc.user + " - 💰 " + acc.coin;
-    list.appendChild(li);
+  if(!money || money <= 0){
+    alert("Nhập số hợp lệ!");
+    return;
+  }
+
+  let coinAdd = Math.floor(money / 1000); // 1000 = 1 điểm
+
+  current.coin += coinAdd;
+  save();
+  updateCoin();
+
+  alert("Nạp thành công +" + coinAdd + " điểm");
+}
+
+// update coin
+function updateCoin(){
+  coin.innerText = current.coin;
+}
+
+// load users
+function loadUsers(){
+  users.innerHTML = "";
+  accounts.forEach(a=>{
+    users.innerHTML += `<div class="user">${a.user} - 💰 ${a.coin}</div>`;
   });
+}
+
+// save
+function save(){
+  localStorage.setItem("accounts", JSON.stringify(accounts));
+}
+
+// logout
+function logout(){
+  location.reload();
 }
 
 </script>
